@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-10-14 08:08:22",
+  "n_total": 3,
+  "n_passed_validation": 3,
+  "questions": [
+    {
+      "qid": "Q-a3792e92",
+      "topic": "凹凸性",
+      "difficulty": "medium",
+      "difficulty_level": 2,
+      "prompt": "判断：若 $f''(x)>0$ 在区间内恒成立，则函数图像在该区间向上弯曲。这个说法对吗？",
+      "ref_answer": "对。二阶导数为正表示导数递增，函数图像通常表现为向上弯曲。",
+      "ref_answer_str": "对。二阶导数为正表示导数递增，函数图像通常表现为向上弯曲。",
+      "steps": [
+        "回忆二阶导数与凹凸性的关系",
+        "$f''(x)>0$ 对应图像向上弯曲",
+        "给出判断"
+      ],
+      "explanation": "凹凸性概念判断题",
+      "ppt_pages": [
+        17,
+        14,
+        11
+      ],
+      "_kind": "slide_mcq",
+      "_validation": {
+        "passed": true,
+        "evidence": [
+          "题目范围依据当前 PPT 相关页: [17, 14, 11]"
+        ],
+        "ref_answer": "对。二阶导数为正表示导数递增，函数图像通常表现为向上弯曲。"
+      }
+    },
+    {
+      "qid": "Q-0c1f75b6",
+      "topic": "凹凸性",
+      "difficulty": "medium",
+      "difficulty_level": 2,
+      "prompt": "概念题：判定曲线凹凸性的一般步骤是什么？",
+      "ref_answer": "先求二阶导数，再找二阶导数为零或不存在的点划分区间，最后判断各区间上二阶导数的符号。",
+      "ref_answer_str": "先求二阶导数，再找二阶导数为零或不存在的点划分区间，最后判断各区间上二阶导数的符号。",
+      "steps": [
+        "求 $f''(x)$",
+        "找可能分界点",
+        "分区间判号",
+        "写出凹凸区间与可能拐点"
+      ],
+      "explanation": "凹凸性方法总结题",
+      "ppt_pages": [
+        17,
+        14,
+        11
+      ],
+      "_kind": "slide_concept",
+      "_validation": {
+        "passed": true,
+        "evidence": [
+          "题目范围依据当前 PPT 相关页: [17, 14, 11]"
+        ],
+        "ref_answer": "先求二阶导数，再找二阶导数为零或不存在的点划分区间，最后判断各区间上二阶导数的符号。"
+      }
+    },
+    {
+      "qid": "Q-27656086",
+      "topic": "凹凸性",
+      "difficulty": "medium",
+      "difficulty_level": 2,
+      "prompt": "求函数 $f(x)=x^3-3x$ 的凹凸区间和拐点。",
+      "ref_answer": "当 $x<0$ 时 $f''(x)<0$，曲线凹；当 $x>0$ 时 $f''(x)>0$，曲线凸；拐点为 $(0,0)$。",
+      "ref_answer_str": "当 $x<0$ 时 $f''(x)<0$，曲线凹；当 $x>0$ 时 $f''(x)>0$，曲线凸；拐点为 $(0,0)$。",
+      "steps": [
+        "求一阶导数 $f'(x)=3x^2-3$",
+        "求二阶导数 $f''(x)=6x$",
+        "判断 $x<0$ 与 $x>0$ 时二阶导数符号",
+        "二阶导数在 $0$ 两侧变号，故 $(0,0)$ 是拐点"
+      ],
+      "explanation": "凹凸性与拐点基础题",
+      "ppt_pages": [
+        17,
+        14,
+        11
+      ],
+      "_kind": "slide_formula",
+      "_validation": {
+        "passed": true,
+        "evidence": [
+          "题目范围依据当前 PPT 相关页: [17, 14, 11]"
+        ],
+        "ref_answer": "当 $x<0$ 时 $f''(x)<0$，曲线凹；当 $x>0$ 时 $f''(x)>0$，曲线凸；拐点为 $(0,0)$。"
+      }
+    }
+  ]
+}

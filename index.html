@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex.min.css">
+<script defer src="/vendor/katex.min.js"></script>
+<script defer src="/vendor/contrib/auto-render.min.js"></script>
+<title>课件智能学习助手 — 通用 PPT 解析 / 出题 / 批改</title>
+<style>
+:root{--paper:#f7f7f7;--paper2:#fdfdfd;--card:#ffffff;--ink:#1f2a24;--dim:#6f7d74;--dim2:#b8c1ba;--line:#e3e6dd;--grid:rgba(120,140,120,.06);--acc:#8bbf7e;--acc2:#eaf3e6;--accline:#cfe0c4;--ok:#4f9d6b;--bad:#c4554b;--warn:#c79a44;--blue:#5b8cae;--blue2:#e8f0f5;--mono:ui-monospace,Consolas,monospace;--serif:Georgia,'Songti SC','SimSun',serif}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.7 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px}
+/* ===== 顶部品牌栏 ===== */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;
+  background:rgba(255,255,255,.7);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;
+  position:sticky;top:12px;z-index:20;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--acc);color:#fff;display:grid;place-items:center;font:700 16px var(--serif)}
+.brand .nm{font:700 17px/1.1 var(--serif);letter-spacing:.3px}
+.brand .tag{font-size:11px;color:var(--dim);margin-top:3px}
+.nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav .tab{padding:9px 16px;cursor:pointer;color:var(--dim);border-radius:9px;font-weight:500;transition:.15s}
+.nav .tab:hover{background:var(--acc2);color:var(--ink)}
+.nav .tab.active{background:var(--acc);color:#fff}
+.status{font-size:12px;color:var(--dim)}
+/* ===== hero ===== */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:36px;align-items:center;padding:24px 0}
+.hero .kicker{font-size:12px;letter-spacing:1px;color:var(--acc);font-weight:700;text-transform:uppercase;margin-bottom:14px}
+.hero h1{font:700 clamp(38px,6vw,60px)/1.05 var(--serif);margin:0 0 14px;letter-spacing:1px}
+.hero h1::after{content:"";display:block;width:120px;height:3px;background:var(--acc);margin-top:16px}
+.hero .desc{color:var(--dim);font-size:15px;max-width:44ch;line-height:1.9;margin-top:18px}
+.hero .acts{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.btn{background:var(--acc);border:1px solid var(--acc);color:#fff;padding:11px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:.15s}
+.btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.ghost:hover{background:var(--acc2);border-color:var(--accline)}
+.btn.sm{padding:8px 14px;font-size:13px}
+.hero .cards{position:relative;min-height:320px}
+.note{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  box-shadow:0 12px 30px rgba(40,60,45,.08);transition:transform .2s}
+.note .lab{font-size:10px;letter-spacing:1px;color:var(--dim2);text-transform:uppercase;margin-bottom:8px}
+.note .eq{font:600 15px/1.7 var(--mono);color:var(--ink);word-break:break-all}
+.note .meta{font-size:11px;color:var(--dim);margin-top:10px}
+.note.n1{top:4px;left:0;transform:rotate(-2deg);z-index:3;max-width:246px}
+.note.n1:hover{transform:rotate(-2deg) translateY(-3px)}
+.note.n2{top:132px;right:0;transform:rotate(1.5deg);z-index:2;max-width:230px;background:var(--acc2);border-color:var(--accline)}
+.note.n2:hover{transform:rotate(1.5deg) translateY(-3px)}
+.note.n3{bottom:0;left:26px;transform:rotate(-1deg);z-index:1;max-width:250px;background:var(--blue2);border-color:#c9d8e2}
+.note.n3:hover{transform:rotate(-1deg) translateY(-3px)}
+.scrollcue{text-align:center;color:var(--dim2);font-size:12px;padding:14px 0 4px}
+.scrollcue .chev{display:block;font-size:18px;margin-top:4px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+/* ===== 课程结构区 ===== */
+.field{background:var(--paper2);border:1px solid var(--line);border-radius:16px;padding:26px;margin-top:16px}
+.field .flab{font-size:11px;letter-spacing:1px;color:var(--acc);text-transform:uppercase;font-weight:700}
+.field .fttl{font:700 clamp(22px,3vw,30px)/1.3 var(--serif);margin:8px 0 4px}
+.field .fsub{color:var(--dim);font-size:13px;margin-bottom:20px}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;cursor:pointer;transition:.15s}
+.item:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 10px 24px rgba(40,60,45,.07)}
+.item .ih{display:flex;align-items:center;gap:12px}
+.item .ico{width:38px;height:38px;border-radius:10px;background:var(--acc2);color:var(--acc);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.item .it{font-weight:700;font-size:15px}
+.item .is{font-size:12px;color:var(--dim);margin-top:2px}
+.item .arw{margin-left:auto;color:var(--dim2);font-size:16px}
+/* ===== 课程结构 tab ===== */
+.chapters{display:flex;flex-direction:column;gap:10px}
+.chap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.15s}
+.chap:hover{border-color:var(--acc);transform:translateX(3px)}
+.chap .ch{display:flex;align-items:center;gap:10px}
+.chap .cn{width:34px;height:34px;border-radius:9px;background:var(--acc2);color:var(--acc);display:grid;place-items:center;font:700 15px var(--serif);flex-shrink:0}
+.chap .ct{font-weight:700;font-size:15px}
+.chap .cp{font-size:12px;color:var(--dim2);margin-left:auto}
+.chap .cd{font-size:12px;color:var(--dim);margin-top:4px}
+/* ===== 课程图谱 tab ===== */
+.graph-sec{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
+@media(max-width:860px){.graph-sec{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.items{grid-template-columns:1fr}}
+.gcanvas{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;overflow:hidden}
+.gcanvas svg{display:block;width:100%;height:auto}
+.gnode{cursor:pointer}
+.gnode text{font:13px system-ui,sans-serif;fill:var(--ink)}
+.gnode .sub{font-size:11px;fill:var(--dim)}
+.gnode rect{transition:.15s}
+.gnode:hover rect{stroke:var(--acc);stroke-width:2}
+.gnode.hl rect{stroke:var(--warn);stroke-width:3}
+.ghint{font-size:12px;color:var(--dim);padding:10px 8px}
+.gpages{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;position:sticky;top:84px}
+.gpages .pt{font-weight:700;font-size:14px;margin-bottom:8px}
+.gpages .eqcard{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;font:13px/1.7 var(--mono);color:var(--ink);word-break:break-all}
+.gpages .eqcard .el{font-family:system-ui;font-size:11px;color:var(--dim2);display:block;margin-bottom:2px}
+.gpages .eqcard .em{font-size:11px;color:var(--dim);display:block;margin-top:4px;font-family:system-ui}
+/* ===== 知识图谱 (逐页动态抽取) ===== */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.kcard:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 10px 24px rgba(40,60,45,.07)}
+.kcard .kk{font-size:10px;letter-spacing:1px;color:var(--dim2);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard .pg{font-weight:700;color:var(--acc);font-size:12px}
+.kcard .src{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:10px;background:var(--acc2);color:var(--acc);text-transform:none;letter-spacing:0;margin-right:20px}
+.kcard .kn{font-weight:700;font-size:15px;line-height:1.4;margin-bottom:8px;color:var(--ink);word-break:break-word}
+.kcard .kf{font:600 13px/1.6 var(--mono);color:var(--ink);background:var(--paper2);border-left:3px solid var(--accline);padding:6px 10px;border-radius:0 8px 8px 0;min-height:20px}
+.kcard .kf.empty{color:var(--dim2);font-weight:400}
+.kcard .km{font-size:11px;color:var(--dim);margin-top:8px}
+.kcard .km .ex{color:var(--blue);font-family:var(--mono)}
+/* 知识图谱 × 薄弱档案 状态 */
+.kcard.weak{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad) inset}
+.kcard.mastered{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.kcard .st{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%}
+.kcard.weak .st{background:var(--bad)}
+.kcard.mastered .st{background:var(--ok)}
+.kcard.untouched .st{background:var(--dim2)}
+.kcard .stlab{font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px}
+.kcard.weak .stlab{color:var(--bad);background:rgba(196,85,75,.12)}
+.kcard.mastered .stlab{color:var(--ok);background:rgba(79,157,107,.14)}
+.kcard.untouched .stlab{color:var(--dim2);background:var(--paper2)}
+.ksum{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.ksum .st{width:10px;height:10px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:4px}
+.ksum .lg{font-size:12px;color:var(--dim);margin-right:10px}
+.ksum .lg i{width:10px;height:10px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:5px}
+.ksum .lgw i{background:var(--bad)}
+.ksum .lgm i{background:var(--ok)}
+.ksum .lgu i{background:var(--dim2)}
+.ksum .msg{margin-left:auto;font-size:12px;color:var(--dim)}
+.ksum .msg b{color:var(--ink)}
+.kdetail{margin-top:10px;background:rgba(196,85,75,.05);border:1px solid var(--bad);border-radius:10px;padding:10px 12px}
+.kdetail .dt{font-size:13px;font-weight:700;color:var(--bad)}
+.kdetail .er{display:inline-block;font-size:12px;background:rgba(196,85,75,.14);color:var(--bad);
+  border-radius:8px;padding:2px 9px;margin:4px 4px 0 0}
+@media(max-width:600px){.ksum{flex-direction:column;align-items:flex-start}.ksum .msg{margin-left:0}}
+.page{border-left:3px solid var(--acc);padding:8px 12px;margin:6px 0;background:var(--card);border-radius:0 8px 8px 0;cursor:pointer}
+.page:hover{background:var(--acc2)}
+.page.on{background:var(--acc2);border-color:var(--warn)}
+.page .pg{font-weight:700;color:var(--acc)}
+.page .ttl{color:var(--ink)}
+.page .pre{color:var(--dim);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{font-size:11px;color:var(--dim2);float:right}
+/* ===== 练习批改 / 档案 tab 通用 ===== */
+.panel{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
+input,select,textarea{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font-size:14px;width:100%}
+textarea{resize:vertical;min-height:72px;font-family:var(--mono);font-size:13px}
+.hint{font-size:12px;color:var(--dim)}
+.out{margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:15px}
+.kv{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
+.badge.ok{background:rgba(79,157,107,.15);color:var(--ok)}
+.badge.bad{background:rgba(196,85,75,.15);color:var(--bad)}
+.badge.mid{background:rgba(199,154,68,.18);color:var(--warn)}
+.mono{font-family:var(--mono);font-size:13px}
+.texwrap{font-size:15px;line-height:1.9}.texwrap .katex{font-size:1em}
+.texwrap .katex-display{margin:6px 0}
+/* ===== 检索 问答 ===== */
+.qans{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:14px}
+.qans .qhead{font-weight:700;font-size:15px;margin-bottom:10px}
+.qans .qmiss{color:var(--bad);font-weight:600;font-size:15px;padding:18px 0}
+.qans .qp{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+.qans .qp .qt{font:700 13px var(--serif);color:var(--acc);margin-bottom:6px}
+.qans .qp .qb{font-size:13px;color:var(--ink);line-height:1.8;white-space:pre-wrap}
+.qans .qp .qe{font:12px/1.7 var(--mono);color:var(--dim);margin-top:6px}
+.qans .qbody{font-size:14px;line-height:1.9;color:var(--ink);margin-top:8px;white-space:pre-wrap}
+.qans .qbody.md{white-space:normal;max-height:none;overflow:visible;height:auto}
+.qans .qbody.md strong{color:var(--ink);font-weight:650}
+.qans .qbody.md h2,.qans .qbody.md h3,.qans .qbody.md h4{color:var(--ink);letter-spacing:.2px}
+.qans .qbody.md .md-list{margin:8px 0;padding-left:20px}
+.qans .qbody.md .md-quote{margin:8px 0;padding:8px 12px;border-left:3px solid var(--accline);background:rgba(255,255,255,.55);border-radius:8px;color:var(--dim)}
+.qans .qbody.md{max-height:none;overflow:visible}
+.qans .qbody.md p{margin:8px 0;line-height:1.85}
+.qans .qbody.md ul.md-list,.qans .qbody.md ol.md-list{margin:8px 0 8px 4px;padding-left:20px}
+.qans .qbody.md ul.md-list li,.qans .qbody.md ol.md-list li{margin:6px 0;line-height:1.78}
+.qans .qbody.md h3,.qans .qbody.md h4,.qans .qbody.md h5{margin:12px 0 8px;line-height:1.4}
+.qans .qbody.md h3{font-size:16px}.qans .qbody.md h4{font-size:15px}.qans .qbody.md h5{font-size:14px}
+.qans .qbody.md code{background:rgba(0,0,0,.04);padding:1px 5px;border-radius:4px;font-family:var(--mono,monospace)}
+.qans .qbody.md blockquote.md-quote{margin:10px 0;padding:8px 14px;border-left:3px solid var(--dim);
+  background:var(--card2, #f7f9fb);color:var(--dim);font-size:12.5px;line-height:1.7;border-radius:0 8px 8px 0}
+.qsrc-line{font-size:12px;color:var(--dim2);margin-top:14px}
+.qsrc{margin-top:16px}
+.qsrc .slab{font-size:11px;letter-spacing:.5px;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.qsrc .chips{display:flex;flex-wrap:wrap;gap:8px}
+.qsrc .chip{background:var(--blue2);border:1px solid #c9d8e2;color:var(--blue);border-radius:20px;
+  padding:4px 12px;font-size:12px;font-weight:600}
+.empty{color:var(--dim);padding:30px;text-align:center}
+.sec-title{font-size:13px;color:var(--dim);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.upzone{margin-top:18px;padding:18px;border:1px dashed var(--accline);border-radius:14px;background:rgba(255,255,255,.5)}
+.upzone label{font-size:12px;color:var(--dim)}
+.upzone input[type=file]{flex:1;min-width:220px}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+details .dt{font:12px/1.8 var(--mono);color:var(--dim);white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:8px}
+
+.badge.status-weak{background:#fff3cd;color:#8a5a00;border-color:#f0d98c}
+.badge.status-mastered{background:#e7f5ea;color:#2f7d46;border-color:#b9dfc2}
+.badge.errtag{background:#eef3ff;color:#3b5f9b;border-color:#cbd9ff}
+.trend-line{width:180px;height:42px;margin-top:8px;overflow:visible}
+.trend-line polyline{fill:none;stroke:#7fb56f;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.trend-line circle{fill:#fff;stroke:#7fb56f;stroke-width:2}
+
+
+.train-block{border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:30px;box-shadow:0 10px 28px rgba(32,48,32,.04)}
+.train-block.green{background:linear-gradient(180deg,rgba(139,190,125,.13),rgba(255,255,255,.92));border-color:#cfe5c9}
+.train-block.gray{background:linear-gradient(180deg,rgba(120,130,140,.08),rgba(255,255,255,.95));border-color:#dfe3e6;margin-top:34px}
+.train-head{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.06)}
+.train-head h2{margin:0 0 6px;font-size:22px;letter-spacing:.2px}
+.train-head .sub{color:var(--dim);font-size:14px;line-height:1.6}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+  <div class="brand">
+    <div class="logo">课</div>
+    <div>
+      <div class="nm">课件智能学习助手</div>
+      <div class="tag">通用 PPT 解析 · M1–M6</div>
+    </div>
+  </div>
+  <div class="nav" id="nav">
+    <div class="tab active" data-t="home">PPT</div>
+    <div class="tab" data-t="search">检索</div>
+    <div class="tab" data-t="train">练习与批改</div>
+    <div class="tab" data-t="profile">薄弱档案</div>
+  </div>
+  <div class="status" id="status">…</div>
+</div>
+  <!-- ============ 课程概览 (hero) ============ -->
+  <div id="p-home" class="panel" style="background:transparent;border:0;padding:0">
+    <div class="hero">
+      <div>
+        <div class="kicker">通用课件学习助手</div>
+        <h1>课件智能<br>学习助手</h1>
+        <div class="desc">上传任意课件，自动解析、出题、批改。</div>
+        <div class="acts">
+          <button class="btn" onclick="goTab('search')">检索课件内容 →</button>
+          <button class="btn ghost" onclick="document.getElementById('upfile').click()">上传课件 PPT</button>
+        <div class="hint" style="margin-top:6px;font-size:12px;color:var(--dim)">上传任意 PPT 课件，自动解析为知识点、公式和例题，无需预设题型。</div>
+        </div>
+        <div class="upzone" id="upOut" style="display:none"></div>
+      </div>
+      <div class="cards">
+        <div class="note n1">
+          <div class="lab">课件解析</div>
+          <div class="eq" id="cardEq1">解析上传课件 · 针对性回答</div>
+          <div class="meta">逐段解析 · 分析透彻</div>
+        </div>
+        <div class="note n2">
+          <div class="lab">过程批改</div>
+          <div class="eq" id="cardEq2">逐步验证 · 首错定位</div>
+          <div class="meta">简答 / 过程双模式</div>
+        </div>
+        <div class="note n3">
+          <div class="lab">举一反三</div>
+          <div class="eq" id="heroStat">自定义出题 · 难度可调节</div>
+          <div class="meta">针对性出题</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrollcue">向下浏览课件结构<span class="chev">↓</span></div>
+
+    <div class="field">
+      <div class="flab">课件功能 / Course 01</div>
+      <div class="fttl">按当前课件主线，建立可检索、可练、可诊断的知识节点</div>
+      <div class="items">
+        <div class="item" onclick="goTab('search')">
+          <div class="ih"><div class="ico">◉</div>
+            <div><div class="it">检索问答</div><div class="is">基于 PPT 检索 + 命中页生成答案与来源</div></div>
+            <div class="arw">→</div></div>
+        </div>
+        <div class="item" onclick="goTab('train')">
+          <div class="ih"><div class="ico">✎</div>
+            <div><div class="it">练习与批改</div><div class="is">出题 + 简答/过程批改</div></div>
+            <div class="arw">→</div></div>
+        </div>
+        <div class="item" onclick="goTab('profile')">
+          <div class="ih"><div class="ico">◈</div>
+            <div><div class="it">薄弱档案</div><div class="is">诊断累积 · 驱动题目倾斜</div></div>
+            <div class="arw">→</div></div>
+        </div>
+      </div>
+      <input id="upfile" type="file" accept=".pptx" style="display:none" onchange="if(this.files[0])doUpload()">
+      <div class="row" style="margin-top:16px;justify-content:space-between">
+        <button class="btn" id="upbtn" onclick="$('upfile').click()">解析 PPT</button>
+      </div>
+      <div class="out" id="ocrStatus"></div>
+      <div class="out" id="curOut"></div>
+    </div>
+  </div>
+
+  <!-- ============ 检索 (基于 PPT 的 问答) ============ -->
+  <div class="panel" id="p-search" style="display:none">
+    <div class="sec-title">基于 PPT 的问答</div>
+    <div class="row" style="align-items:center;gap:12px">
+      <div style="flex:1;min-width:260px"><label>问题</label>
+        <input id="sq" placeholder="输入问题，例如：这个概念的定义是什么 / 某公式怎么推导"
+               onkeydown="if(event.key==='Enter')doSearch()"></div>
+      <button class="btn" onclick="doSearch()">检索</button>
+    </div>
+    <div id="qOut" style="margin-top:16px"><div class="empty">输入问题，回车或点“检索”，在下方查看答案与来源页。</div></div>
+  </div>
+
+  <!-- ============ 练习与批改 ============ -->
+  <div class="panel" id="p-train" style="display:none">
+    <section class="train-block green">
+      <div class="train-head">
+        <h2>按约束出题</h2>
+        <div class="sub">填写知识点、难度、数量，系统生成题目并用 SymPy 验证答案正确性</div>
+      </div>
+      <div class="hint" id="famHint" style="margin-bottom:12px;font-size:12px;color:var(--dim)">当前课件支持：加载中…</div>
+      <div class="row">
+        <div style="flex:1;min-width:180px"><label>知识点约束（留空=按薄弱点倾斜）</label><input id="ptop" placeholder="留空=按薄弱点倾斜；如 导数 / 凹凸性 / 极限"></div>
+        <div style="width:110px"><label>难度</label><select id="pdiff"><option value="1">L1</option><option value="2" selected>L2</option><option value="3">L3</option></select></div>
+        <div style="width:80px"><label>数量</label><input id="pn" value="4" type="number" min="1" max="10"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn" onclick="doPractice()">出题 + 校验</button></div>
+      <div class="out" id="pracOut"></div>
+    </section>
+
+    <section class="train-block gray">
+      <div class="train-head">
+        <h2>自定义题目批改</h2>
+        <div class="sub">输入你自己写的题目和学生答案，系统根据题型选择批改规则</div>
+      </div>
+      <div class="row">
+        <div style="width:220px"><label>批改范围</label><select id="customType">
+          <option value="auto">自动识别</option>
+          <option value="limit">函数与极限</option>
+          <option value="derivative">导数与微分</option>
+          <option value="integral">不定积分 / 定积分</option>
+          <option value="monotonicity">单调性 / 极值</option>
+          <option value="concavity">凹凸性 / 拐点</option>
+          <option value="other">微分方程</option>
+          <option value="other">空间解析几何</option>
+          <option value="other">多元函数微分法</option>
+          <option value="other">重积分</option>
+          <option value="other">曲线积分与曲面积分</option>
+          <option value="other">无穷级数</option>
+          <option value="other">概念题 / 证明题 / 其他</option>
+        </select></div>
+        <div style="flex:1;min-width:180px"><label>知识范围（可选）</label><input id="gtopic" value="" placeholder="如 极限 / 导数 / 换元积分 / 定积分 / 微分方程 / 重积分 / 级数"></div>
+      </div>
+      <div style="margin-top:10px">
+        <label>题目</label>
+        <textarea id="customQuestion" rows="3" placeholder="例如：求极限 lim(x→1) (x²-1)/(x-1)" style="width:100%;resize:vertical"></textarea>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div style="width:260px"><label>提交内容</label><select id="customSubmitMode"><option value="final">只提交最终答案</option><option value="steps" selected>提交完整解题步骤</option></select></div>
+        <span class="hint">系统会根据题目自动求参考结果；识别不了会提示改写格式。</span>
+      </div>
+      <div style="margin-top:10px">
+        <label>学生作答</label>
+        <textarea id="customAnswer" rows="7" placeholder="只提交最终答案时：直接写答案&#10;提交完整解题步骤时：每行写一步，最后一行写最终答案" style="width:100%;resize:vertical"></textarea>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" onclick="gradeCustomQuestion()">提交批改</button>
+      </div>
+      <div class="out" id="gradeOut"></div>
+    </section>
+  </div>
+
+  <!-- ============ 薄弱档案 ============ -->
+  <div class="panel" id="p-profile" style="display:none">
+    <div class="row">
+      <button class="btn ghost" onclick="loadProfile()">刷新档案</button>
+
+    </div>
+    <div class="out" id="profSummary"></div>
+    <div class="out" id="profOut"><div class="empty">加载中…</div></div>
+    <div class="out" id="topicPracticeOut" style="margin-top:16px"></div>
+  </div>
+</div>
+<script>
+// ---------- tab ----------
+const $ = id => document.getElementById(id);
+const api = async (url, opt) => (await fetch(url, opt)).json();
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function mdRender(el, rawText) {
+  const txt = rawText != null ? String(rawText) : el.innerHTML;
+  if (!txt.trim()) { el.innerHTML = ''; return; }
+  const lines = String(txt).split(/\r?\n/);
+  const inline = s => {
+    let out = String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    return out;
+  };
+  let out = '';
+  let inUl = false, inOl = false;
+  const closeLists = () => { if (inUl) { out += '</ul>'; inUl = false; } if (inOl) { out += '</ol>'; inOl = false; } };
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\s+$/, '');
+    const h = line.match(/^(#{1,4})\s+(.*)$/);
+    if (h) {
+      closeLists();
+      const lvl = Math.min(4, h[1].length);
+      out += `<h${2+lvl} class="md-h${lvl}">${inline(h[2])}</h${2+lvl}>`;
+      continue;
+    }
+    const ul = line.match(/^\s*[-•]\s+(.*)$/);
+    if (ul) {
+      if (inOl) { out += '</ol>'; inOl = false; }
+      if (!inUl) { out += '<ul class="md-list">'; inUl = true; }
+      out += `<li>${inline(ul[1])}</li>`;
+      continue;
+    }
+    const ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
+    if (ol) {
+      if (inUl) { out += '</ul>'; inUl = false; }
+      if (!inOl) { out += '<ol class="md-list">'; inOl = true; }
+      out += `<li>${inline(ol[1])}</li>`;
+      continue;
+    }
+    const q = line.match(/^>\s?(.*)$/);
+    if (q) {
+      closeLists();
+      out += `<blockquote class="md-quote">${inline(q[1])}</blockquote>`;
+      continue;
+    }
+    if (line === '') { closeLists(); continue; }
+    closeLists();
+    out += `<p>${inline(line)}</p>`;
+  }
+  closeLists();
+  el.innerHTML = out;
+}
+
+function math(el) {
+  if (typeof renderMathInElement !== 'function') return;
+  renderMathInElement(el, {
+    delimiters: [{left: '$$', right: '$$', display: true},
+                 {left: '$',  right: '$',  display: false}],
+    throwOnError: false, errorColor: '#c4554b',
+  });
+}
+
+document.querySelectorAll('#nav .tab').forEach(t => t.onclick = () => goTab(t.dataset.t));
+function focusSearch() { const el = $('sq'); if (el) el.focus(); }
+async function doSearch() {
+  const q = ($('sq').value || '').trim();
+  const out = $('qOut');
+  if (!q) { out.innerHTML = '<div class="empty">请输入问题再检索。</div>'; return; }
+  out.innerHTML = '<div class="empty">正在检索并生成回答…</div>';
+  let r;
+  try { r = await api('/api/qa?q=' + encodeURIComponent(q)); }
+  catch { out.innerHTML = '<div class="empty">后端离线，无法检索（先启动 server.py）。</div>'; return; }
+  out.innerHTML = `<div class="qans">
+      <div class="qhead">「${esc(q)}」</div>
+      <div class="qbody md">${esc(r.answer || '课件中未涉及')}</div>
+    </div>`;
+  const bodyEl = out.querySelector('.qbody.md');
+  if (bodyEl) { mdRender(bodyEl, r.answer || '课件中未涉及'); math(bodyEl); }
+}
+const PANELS = ['home','search','train','profile'];
+function goTab(name) {
+  document.querySelectorAll('#nav .tab').forEach(x => x.classList.toggle('active', x.dataset.t === name));
+  PANELS.forEach(p => $('p-'+p).style.display = (p === name ? '' : 'none'));
+  if (name === 'home') loadCurrent();
+  if (name === 'search') focusSearch();
+  if (name === 'profile') loadProfile();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------- status ----------
+(async () => {
+  try { await api('/api/search?q='); $('status').textContent = '● 后端在线'; $('status').style.color = 'var(--ok)'; }
+  catch { $('status').textContent = '○ 后端离线（启动 server.py）'; $('status').style.color = 'var(--bad)'; }
+})();
+
+// ---------- 当前课件 ----------
+async function loadCurrent() {
+  const c = await api('/api/current');
+  const out = $('curOut');
+  const courseNameEl = $('curCourseName');
+  if (!c.loaded) {
+    if (courseNameEl) courseNameEl.textContent = '尚未加载';
+    out.innerHTML = '';
+    return;
+  }
+  if (courseNameEl) courseNameEl.textContent = c.source || '已加载课件';
+  out.innerHTML = `<div class="card"><div class="kv">
+      <span>当前课件 <b>${esc(c.source)}</b></span>
+      <span>页数 <b>${esc(c.page_count || '-')}</b></span>
+      <span class="badge ok">已完成解析</span>
+    </div></div>`;
+}
+
+// ---------- 上传 ----------
+async function doUpload() {
+  const f = $('upfile').files[0];
+  const out = $('upOut');
+  if (!f) { out.style.display='none'; return; }
+  if (!f.name.toLowerCase().endsWith('.pptx')) { out.style.display='block'; out.innerHTML = '<div class="hint">仅支持 .pptx</div>'; return; }
+  out.style.display = 'block';
+  out.innerHTML = '<div class="hint">上传 + 解析中…</div>';
+  const fd = new FormData(); fd.append('file', f);
+  const btn = $('upbtn'); btn.disabled = true; btn.textContent = '解析中…';
+  try {
+    const r = await fetch('/api/upload', {method:'POST', body: fd});
+    const j = await r.json();
+    if (j.error) { out.innerHTML = `<div class="card" style="border-color:var(--bad)"><h3 style="color:var(--bad)">解析失败</h3><div class="hint mono">${esc(j.error)}${j.type?' ('+esc(j.type)+')':''}</div></div>`; }
+    else {
+      out.innerHTML = `<div class="card" style="border-color:var(--ok)">
+        <div class="kv"><span class="badge ok">✓ 已解析</span>
+          <span>页数 <b>${j.page_count}</b></span></div>
+        <div class="hint">课件内容已就绪，可用于检索、出题和批改。</div></div>`;
+      loadKnowledge(); loadCurrent(); startOcrPoll();
+    }
+  } catch (e) { out.innerHTML = `<div class="hint">请求失败: ${esc(e.message)}</div>`; }
+  btn.disabled = false; btn.textContent = '解析 PPT';
+}
+let _ocrTimer = null;
+function startOcrPoll() {
+  if (_ocrTimer) clearInterval(_ocrTimer);
+  _ocrTimer = setInterval(async () => {
+    const s = await api('/api/ocr-status');
+    const el = $('ocrStatus');
+    if (!el) return;
+    if (s.running) {
+      el.innerHTML = `<div class="card" style="border-color:var(--warn)"><span class="badge mid">⏳ 正在继续优化课件识别…</span>
+        <span class="hint">完成后会自动更新课件内容</span></div>`;
+    } else if (s.ready) {
+      const r = s.result || {};
+      el.innerHTML = `<div class="card" style="border-color:var(--ok)"><span class="badge ok">✓ 课件解析完成</span>
+        <span class="hint">可以开始检索、出题和批改</span></div>`;
+      loadCurrent(); clearInterval(_ocrTimer); _ocrTimer = null;
+    }
+  }, 5000);
+}
+
+// ---------- 课程结构 ----------
+let _SYL = null;  // /api/syllabus 缓存
+async function loadChapters() {
+  const out = $('chapOut');
+  try { _SYL = await api('/api/syllabus'); }
+  catch { out.innerHTML = '<div class="empty">加载课程结构失败（后端离线?）</div>'; return; }
+  const hint = _SYL.path_hint ? `<div class="hint" style="margin-bottom:12px">📌 学习路径建议（启发式）：${esc(_SYL.path_hint)}</div>` : '';
+  const list = _SYL.chapters.map((c,i) => {
+    const range = (c.from && c.to) ? `P${c.from}–${c.to}` : (c.volume || '同济目录');
+    return `<div class="chap" onclick="openChapter(${i})">
+      <div class="ch"><div class="cn">${i+1}</div><div class="ct">${esc(c.name)}</div>
+        <div class="cp">${esc(range)}</div></div>
+      <div class="cd">${esc(c.desc)}${c.kids && c.kids.length?` <span class="hint">｜ ${c.kids.map(esc).join(' · ')}</span>`:''}</div></div>`;
+  }).join('');
+  out.innerHTML = hint + (list || '<div class="empty">无章节（未识别到章节标题页）</div>');
+}
+function openChapter(i) { goTab('search'); }
+// ---------- 知识图谱 × 薄弱档案 联动 ----------
+let _KNOW = null;   // /api/knowledge 缓存
+let _KG = null;     // /api/kgraph 缓存 (节点状态 + 错因统计)
+const _STLAB = {weak:'薄弱', mastered:'掌握', untouched:'未涉及'};
+
+async function loadKnowledge() {
+  const out = $('kgrid'), meta = $('gkmeta'), sum = $('gksum');
+  // 知识图谱 panel 已 移除: 仍 拉 取 数据 供 train 家族 提示 用, 不 渲染 到 已删 节点
+  if (!out) { try { _KNOW = await api('/api/knowledge'); _KG = await api('/api/kgraph'); } catch { _KNOW = null; }
+    const famEl = $('famHint');
+    if (famEl && _KNOW) { const names = (_KNOW.nodes||[]).map(x=>x.name).filter(Boolean);
+      const cnt={}; names.forEach(x=>cnt[x]=(cnt[x]||0)+1);
+      const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4).map(e=>e[0]);
+      if (top.length) { famEl.textContent = '当前课件支持：' + top.join(' / ') + '。'; const pt=$('ptop'); if(pt) pt.placeholder = '留空=按薄弱点倾斜；如 ' + top.slice(0,3).join(' / '); } }
+    return; }
+  try { _KNOW = await api('/api/knowledge'); _KG = await api('/api/kgraph'); }
+  catch { out.innerHTML = '<div class="empty">加载知识图谱失败（后端离线?）</div>'; meta.textContent = ''; return; }
+  const nodes = _KNOW.nodes || [];
+  meta.textContent = '';
+  // 顶部汇总: 已诊断 N 个知识点, 其中 M 个薄弱
+  sum.innerHTML = '<span class="lg lgw"><i></i>薄弱</span>' +
+    '<span class="lg lgm"><i></i>掌握</span>' +
+    '<span class="lg lgu"><i></i>未涉及</span>' +
+    '<span class="msg">' + ( _KG.hint ? esc(_KG.hint) : '尚无诊断记录 — 批改一道题后，对应节点会变色' ) +
+    ' · 节点 <b>' + nodes.length + '</b> / 课件 <b>' + (_KNOW.total_pages||0) + '</b> 页</span>';
+  out.innerHTML = nodes.length ? nodes.map(renderKcard).join('') : '<div class="empty">无知识节点（slides.json 未加载或全部为空页）</div>';
+  $('kdetail').style.display = 'none';
+  const names = nodes.map(x => x.name).filter(Boolean);
+  const cnt = {}; names.forEach(x => cnt[x] = (cnt[x] || 0) + 1);
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 4).map(e => e[0]);
+  const famEl = $('famHint');
+  if (famEl) {
+    if (top.length) {
+      famEl.textContent = `当前课件支持：${top.join(' / ')}。接入新题型只需加载对应验证器。`;
+      $('ptop').placeholder = `留空=按薄弱点倾斜；如 ${top.slice(0, 3).join(' / ')}`;
+    } else if (nodes.length) { famEl.textContent = '当前课件已解析，留空知识点约束可随机抽题。'; }
+    if (nodes[0] && !$('gtopic').value) $('gtopic').value = nodes[0].name;
+  }
+}
+function _nodeStatus(pn) {
+  const st = _KG && _KG.node_status ? _KG.node_status[pn] : null;
+  return st || {status:'untouched', matched_topic:null, err_stats:{}};
+}
+function renderKcard(n) {
+  const st = _nodeStatus(n.page_no);
+  const srcBadge = {title:'标题', example:'例N', keyword:'关键词', formula:'公式页', body:'正文'}[n.source] || n.source;
+  const exLine = (n.examples && n.examples.length) ? '<span class="ex">' + n.examples.map(esc).join(' · ') + '</span>' : '';
+  const f = n.formula;
+  const kf = (f && String(f).trim()) ? '<div class="kf">' + esc(f) + '</div>' : '<div class="kf empty">暂无公式</div>';
+  const cls = 'kcard ' + st.status;
+  const dot = '<span class="st"></span>';
+  const lab = '<span class="stlab">' + _STLAB[st.status] + '</span>';
+  const onclick = (st.status === 'weak') ? ('showWeakDetail(' + n.page_no + ')') : ('openKnowledgePage(' + n.page_no + ', this)');
+  return '<div class="' + cls + '" onclick="' + onclick + '">' + dot +
+    '<div class="kk"><span class="pg">P' + n.page_no + '</span>' + lab + '<span class="src">' + esc(srcBadge) + '</span></div>' +
+    '<div class="kn">' + esc(n.name || '(无名称)') + '</div>' +
+    kf +
+    '<div class="km">' + n.n_formulas + ' 个公式' + (exLine ? ' · ' + exLine : '') + '</div>' +
+    '</div>';
+}
+// 点击薄弱节点 -> 展开该知识点的错误类型统计 (从 weakness_profile.json 经 /api/kgraph 读)
+function showWeakDetail(pn) {
+  const st = _nodeStatus(pn);
+  const box = $('kdetail');
+  if (!st.matched_topic) { box.style.display = 'none'; return; }
+  const errs = st.err_stats || {};
+  const etypes = Object.entries(errs);
+  let html = '<div class="dt">薄弱知识点：' + esc(st.matched_topic) + '</div>';
+  if (etypes.length) {
+    html += '<div style="margin-top:8px">错误类型统计：</div>' +
+      etypes.map(([t, c]) => '<span class="er">' + esc(t) + ' ×' + c + '</span>').join('');
+  } else {
+    html += '<div class="hint">（无错误类型明细）</div>';
+  }
+  html += '<div class="hint" style="margin-top:6px">P' + pn + ' · 该节点关联知识点「' + esc(st.matched_topic) + '」，建议优先练习同类题。</div>';
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+function openKnowledgePage(no, el) {
+  // 点击卡片 -> 展开该页详情，不跳转 tab
+  showPageDetail(no, el);
+}
+async function showChapPages(c) {
+  // 知识图谱 面板 已 移除: 仅 保留 章节 元数据 缓存 供 他处 使用
+  try { _SYL = _SYL || await api('/api/syllabus'); } catch {}
+}
+
+
+// ---------- (旧 SVG 图谱已移除, 知识图谱改逐页动态卡片) ----------
+async function showPageDetail(no, el) {
+  const p = await api('/api/pages/'+no);
+  let d = el.querySelector('details');
+  if (!d) { d = document.createElement('details'); el.appendChild(d); }
+  const fos = p.formula_objects||[];
+  d.innerHTML = `<summary>P${no} 详情 — ${esc(p.title||'无标题')} · ${fos.length} 公式${(p.examples||[]).length?' · '+(p.examples||[]).length+' 例题':''}</summary>
+    <div class="dt">${esc(p.body_text||'')}</div>
+    <div class="sec-title" style="margin-top:6px">公式 × ${fos.length}</div>
+    ${fos.slice(0,8).map(f => `<div class="hint mono">· [${f.text_confidence}] ${esc(f.text||'∅')}${f.ocr_text?` ⇄ 识别文本:"${esc(f.ocr_text)}"`:''}</div>`).join('')}`;
+}
+
+// ---------- 练习与批改 ----------
+async function doPractice() {
+  const topic = $('ptop').value.trim();
+  const diff = $('pdiff').value, n = $('pn').value, out = $('pracOut');
+  out.innerHTML = '<div class="empty">生成 + 校验中…</div>';
+  const r = await api(`/api/practice?topic=${encodeURIComponent(topic)}&diff=${diff}&n=${n}`);
+  let badge = r.tilted_topic ? `<span class="badge mid">主题：${esc(r.tilted_topic)}</span>` : `<span class="badge ok">未指定主题</span>`;
+  let html = `<div class="card"><div class="kv"><span>${badge}</span>
+    <span class="badge mid">${esc(r.difficulty_label || ('L' + diff))}</span>
+    <span>生成 <b>${r.n_generated}</b> 题</span>
+    <span class="badge ${r.n_passed===r.n_generated?'ok':'bad'}">校验通过 ${r.n_passed}/${r.n_generated}</span></div></div>`;
+  if (r.not_in_ppt && !r.questions.length) {
+    html += `<div class="card"><div class="hint">当前课件中未涉及「${esc(r.tilted_topic||topic)}」相关内容，未生成题目。</div></div>`;
+    out.innerHTML = html;
+    math(out);
+    return;
+  }
+  html += '<div class="sec-title">候选题</div>';
+  for (const [idx, q] of (r.questions||[]).entries()) {
+    const famMap = {integral:'积分', derivative:'导数/单调', concavity:'凹凸性', limit:'极限', slide_formula:'课件公式题', slide_concept:'课件概念题', slide_example:'课件例题题', slide_mcq:'课件判断题'};
+    const fam = famMap[q.kind] || q.kind || '课件驱动题';
+    const famCls = (q.kind === 'derivative' ? 'ok' : (q.kind === 'concavity' ? 'bad' : ((q.kind === 'slide_formula' || q.kind === 'slide_concept' || q.kind === 'slide_example' || q.kind === 'slide_mcq') ? 'ok' : 'mid')));
+    const steps = (q.steps||[]).length ? `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--dim)">查看参考解析</summary><ol class="hint texwrap">${(q.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}</ol></details>` : '';
+    html += `<div class="card qcard" id="card-${esc(q.qid)}">
+      <div class="kv" style="justify-content:space-between;align-items:center">
+        <div><span class="badge ${famCls}">第 ${idx+1} 题 · ${esc(fam)}</span><span class="badge mid">L${q.level} ${q.difficulty}</span></div>
+      </div>
+      <h3 class="texwrap" style="margin-top:12px">${esc(q.prompt)}</h3>
+      <div class="answer-box" style="margin-top:14px;background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:12px">
+        <label class="hint" style="display:block;margin-bottom:6px">我的答案</label>
+        <textarea id="ans-${esc(q.qid)}" rows="3" placeholder="在这里输入答案；过程题可每行写一步" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;font:14px/1.6 var(--mono);background:#fff"></textarea>
+        <div class="row" style="margin-top:10px;gap:10px;align-items:center">
+          <button class="btn sm" onclick="submitQuestionGrade('${esc(q.qid)}', ${JSON.stringify(q).replace(/"/g,'&quot;')})">提交批改</button>
+          <span class="hint">批改结果会显示在本题下方</span>
+        </div>
+        <div id="grade-${esc(q.qid)}" style="margin-top:10px"></div>
+      </div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--dim)">查看参考答案</summary><div class="hint texwrap" style="margin-top:8px"><b>参考答案：</b>${esc(q.ref)}</div>${steps}</details>
+      <div class="hint texwrap" style="margin-top:8px">依据：${esc(q.evidence)}</div>
+    </div>`;
+  }
+  out.innerHTML = html;
+  math(out);
+}
+async function submitQuestionGrade(qid, q) {
+  const ansEl = document.getElementById('ans-' + qid);
+  const box = document.getElementById('grade-' + qid);
+  const text = (ansEl?.value || '').trim();
+  if (!text) { box.innerHTML = '<div class="hint" style="color:var(--warn)">请先输入答案再提交。</div>'; return; }
+  box.innerHTML = '<div class="hint">批改中…</div>';
+  const lines = text.split('\n').map(s=>s.trim()).filter(Boolean);
+  const isProcess = lines.length > 1;
+  const payload = {
+    mode: isProcess ? 'B' : 'A',
+    topic: q.topic || '',
+    ref_answer: q.ref || '',
+    student_answer: text,
+    student_steps: lines,
+    qid: qid,
+    prompt: q.prompt || ''
+  };
+  try {
+    const r = await api('/api/grade', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    const ok = r.verdict === '正确' || r.is_correct;
+    const badge = `<span class="badge ${ok?'ok':'bad'}">${esc(r.verdict || (ok?'正确':'需订正'))}</span>`;
+    const evidence = r.symbol_evidence || r.evidence?.detail || '';
+    const corr = r.correction?.correction ? `<div class="hint"><b>建议：</b>${esc(r.correction.correction)}</div>` : '';
+    const ref = r.correct_ref ? `<div class="hint texwrap"><b>参考：</b>${esc(r.correct_ref)}</div>` : '';
+    const stepHtml = (r.steps||[]).length ? `<details style="margin-top:8px"><summary style="cursor:pointer;color:var(--dim)">查看逐步结果</summary>${(r.steps||[]).map(s=>{ const mark = s.ok===true?'✓':(s.ok===false?'✗':'未判定'); return `<div class="hint texwrap">${esc(s.label||'步骤')}：${esc(s.expr||'')} ${mark} ${s.evidence?('｜'+esc(s.evidence)):''}</div>`; }).join('')}</details>` : '';
+    box.innerHTML = `<div class="card" style="margin-top:10px;border-color:${ok?'var(--ok)':'var(--warn)'}"><div class="kv">${badge}${r.error_type?`<span class="badge mid">${esc(r.error_type)}</span>`:''}</div>${ref}${evidence?`<div class="hint texwrap"><b>证据：</b>${esc(evidence)}</div>`:''}${corr}${stepHtml}</div>`;
+    math(box);
+  } catch(e) {
+    box.innerHTML = `<div class="hint" style="color:var(--bad)">批改失败：${esc(e.message)}</div>`;
+  }
+}
+
+async function gradeCustomQuestion() {
+  const type = $('customType').value;
+  const topic = $('gtopic').value.trim() || ({limit:'极限',derivative:'导数',integral:'积分',monotonicity:'单调性',concavity:'凹凸性'}[type] || '');
+  const question = $('customQuestion').value.trim();
+  const answer = $('customAnswer').value.trim();
+  const submitMode = $('customSubmitMode').value;
+  const out = $('gradeOut');
+  if (!question) { out.innerHTML = '<div class="empty">请先输入题目。</div>'; return; }
+  if (!answer) { out.innerHTML = '<div class="empty">请先输入学生作答。</div>'; return; }
+  out.innerHTML = '<div class="empty">批改中…</div>';
+  const lines = answer.split('\n').map(s => s.trim()).filter(Boolean);
+  const mode = submitMode === 'steps' ? 'B' : 'A';
+  const payload = {
+    mode,
+    topic,
+    problem_type: type,
+    prompt: question,
+    student_answer: answer,
+    student_steps: lines,
+  };
+  try {
+    const r = await api('/api/grade', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    renderGradeResult(out, r, mode);
+  } catch(e) {
+    out.innerHTML = `<div class="hint" style="color:var(--bad)">批改失败：${esc(e.message)}</div>`;
+  }
+}
+
+function renderGradeResult(out, r, mode) {
+  const status = r.grade_status || (r.verdict === '正确' ? 'correct' : (r.is_correct ? 'partial' : 'incorrect'));
+  const cls = status === 'correct' ? 'ok' : (status === 'partial' ? 'mid' : (status === 'unreliable' ? 'mid' : 'bad'));
+  const typeMap = {limit:'极限', derivative:'导数', integral:'积分', monotonicity:'单调性', concavity:'凹凸性', unknown:'未识别', other:'其他'};
+  let html = `<div class="card"><div class="kv"><span class="badge ${cls}">${esc(r.verdict || '-')}</span>` +
+    `${r.reliability ? `<span class="badge mid">可靠性：${esc(r.reliability)}</span>` : ''}` +
+    `${r.problem_type ? `<span class="badge mid">题型：${esc(typeMap[r.problem_type] || r.problem_type)}</span>` : ''}` +
+    `${r.error_type ? `<span class="badge bad">${esc(r.error_type)}</span>` : ''}</div>`;
+  if (r.correct_ref) html += `<div class="hint texwrap"><b>参考答案：</b>${esc(r.correct_ref)}</div>`;
+  if (r.first_wrong_step) html += `<div class="hint"><b>首个问题位置：</b>${esc(r.first_wrong_step)}</div>`;
+  if (r.symbol_evidence) html += `<div class="hint texwrap"><b>批改依据：</b>${esc(r.symbol_evidence)}</div>`;
+  if (r.correction?.correction) html += `<div class="hint"><b>建议：</b>${esc(r.correction.correction)}</div>`;
+  if ((r.steps||[]).length) {
+    html += '<div class="sec-title">逐步检查</div>';
+    html += `<div style="font-family:var(--mono);font-size:13px;line-height:2">` +
+      (r.steps||[]).map(s => {
+        const mark = s.ok === true ? '<span class="badge ok" style="float:right">✓ 通过</span>' :
+          (s.ok === false ? '<span class="badge bad" style="float:right">✗ 有问题</span>' : '<span class="badge mid" style="float:right">未判定</span>');
+        const ev = s.evidence ? `<div class="texwrap" style="font-size:11px;color:var(--dim2)">依据：${esc(s.evidence)}</div>` : '';
+        return `<div style="clear:both;border-bottom:1px dashed var(--line);padding:4px 0">${mark}<div>${esc(s.label||'步骤')}: <span class="texwrap">${esc(s.expr||'')}</span></div>${ev}</div>`;
+      }).join('') + '</div>';
+  }
+  html += '</div>';
+  out.innerHTML = html;
+  math(out);
+}
+
+// ---------- 档案 ----------
+async function loadProfile() {
+  const b = await api('/api/profile-board');
+  const sEl = $('profSummary');
+  const out = $('profOut');
+  const pEl = $('topicPracticeOut');
+  if (pEl) pEl.innerHTML = '';
+  const cleanTopics = Object.entries(b.topics || {}).filter(([t]) => t && String(t).trim());
+  if (!cleanTopics.length) {
+    if (sEl) sEl.innerHTML = '';
+    out.innerHTML = '<div class="empty">尚无诊断记录，请先在练习与批改页提交作业</div>';
+    return;
+  }
+  const weakLabel = b.weakest_topic ? `${esc(b.weakest_topic)}（${b.weakest_errors} 次错误）` : '暂无';
+  const recentList = b.overall_recent_pct || [];
+  const recentCorrect = recentList.filter(v => Number(v) >= 60).length;
+  const recentWrong = Math.max(0, recentList.length - recentCorrect);
+  const trend = recentList.length ? `最近 ${recentList.length} 次：正确 ${recentCorrect} 次，错误 ${recentWrong} 次` : '暂无练习记录';
+  if (sEl) {
+    sEl.innerHTML = `
+      <div class="row" style="gap:10px;align-items:stretch">
+        <div class="card" style="flex:1;min-width:220px"><div class="sec-title">已诊断知识点</div><div style="font-size:26px;font-weight:800">${b.diagnosed_topics}</div><div class="hint">有记录的知识点数</div></div>
+        <div class="card" style="flex:1.6;min-width:320px"><div class="sec-title">最薄弱知识点</div><div style="font-size:22px;font-weight:800">${weakLabel}</div><div class="hint">按累计错误次数排序</div></div>
+        <div class="card" style="flex:1.2;min-width:260px"><div class="sec-title">最近练习正确率</div><div style="font-size:24px;font-weight:800">${b.overall_recent_avg == null ? '—' : (b.overall_recent_avg + '%')}</div><div class="hint">${trend}</div>
+          ${recentList.length ? `<div style="display:flex;gap:4px;margin-top:8px;align-items:flex-end;height:34px">${recentList.map(v => `<div title="${v >= 60 ? '正确' : '错误'}" style="width:18px;height:${v >= 60 ? 34 : 8}px;background:${v >= 60 ? 'rgba(127,181,111,.55)' : 'rgba(199,154,68,.35)'};border-radius:4px"></div>`).join('')}</div><div class="hint" style="font-size:11px;margin-top:4px">高柱=正确，低柱=错误</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+  const entries = cleanTopics.sort((a, z) => z[1].total_errors - a[1].total_errors);
+  let html = '';
+  for (const [t, d] of entries) {
+    const errBadges = Object.entries(d.errors || {}).map(([e, n]) => `<span class="badge errtag" style="margin:2px">${esc(e)} ×${n}</span>`).join(' ');
+    const rateBadges = (d.recent_rates || []).map((v, i) => `<span class="badge mid" style="margin:2px">第${i + 1}次：${v}%</span>`).join(' ');
+    const hasTrend = (d.recent_rates || []).length > 0;
+    const vals = (d.recent_rates || []);
+    const points = vals.map((v,i)=>`${vals.length===1?90:10+i*(160/(vals.length-1))},${36-(Math.max(0,Math.min(100,v))*0.28)}`).join(' ');
+    const lineChart = hasTrend ? `<svg class="trend-line" viewBox="0 0 180 42"><polyline points="${points}"></polyline>${points.split(' ').map(pt=>{const [x,y]=pt.split(',');return `<circle cx="${x}" cy="${y}" r="3"></circle>`}).join('')}</svg>` : '';
+    const related = (d.related || []).map(r => `
+      <details style="margin-top:8px">
+        <summary style="cursor:pointer"><b>错题记录</b>：${esc(r.verdict)}${r.error_type ? ` · ${esc(r.error_type)}` : ''}</summary>
+        <div class="card" style="margin-top:8px">
+          <div class="hint"><b>题目</b>：${esc(r.prompt || '-')}</div>
+          <div class="hint"><b>错误项</b>：${esc(r.wrong_expr || '-')}</div>
+          <div class="hint"><b>参考</b>：${esc(r.correct_ref || '-')}</div>
+          <div class="hint"><b>诊断</b>：${esc(r.diagnosis || '-')}</div>
+          <div class="hint"><b>同类练习</b>：${esc(r.practice || '-')}</div>
+        </div>
+      </details>
+    `).join('');
+    html += `
+      <div class="card" style="margin-top:12px">
+        <div class="row" style="justify-content:space-between;gap:8px">
+          <h3>${esc(t)}</h3>
+          <div>
+            <span class="badge ${d.status === 'weak' ? 'status-weak' : 'status-mastered'}">${d.status === 'weak' ? '薄弱' : (d.status === 'mastered' ? '已掌握' : '未记录')}</span>
+            <span class="hint" style="margin-left:8px">正确 ${d.correct} 次 · 错误 ${d.total_errors} 次</span>
+          </div>
+        </div>
+        <div class="sec-title" style="margin-top:10px">错误类型分布</div>
+        <div>${errBadges || '<span class="hint">暂无错误类型记录</span>'}</div>
+        <div class="sec-title" style="margin-top:10px">掌握度趋势（最近 ${(d.recent_rates || []).length || 5} 次）</div>
+        <div>${rateBadges || '<span class="hint">暂无历史练习记录</span>'}</div>
+        ${lineChart}
+        <div class="sec-title" style="margin-top:10px">关联错题</div>
+        <div>${related || '<span class="hint">暂无关联错题</span>'}</div>
+        <div style="margin-top:14px">
+          <button class="btn topic-practice-btn" data-topic="${esc(t)}">针对这个薄弱点生成练习</button>
+        </div>
+      </div>
+    `;
+  }
+  out.innerHTML = html || '<div class="empty">尚无诊断记录，请先在练习与批改页提交作业</div>';
+}
+
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest && ev.target.closest('.topic-practice-btn');
+  if (!btn) return;
+  ev.preventDefault();
+  generateTopicPractice(btn.dataset.topic || '', btn);
+});
+
+async function generateTopicPractice(topic, btn=null) {
+  let pEl = null;
+  if (btn) {
+    const host = btn.closest('.card') || btn.parentElement;
+    pEl = host.querySelector('.topic-practice-inline');
+    if (!pEl) {
+      pEl = document.createElement('div');
+      pEl.className = 'topic-practice-inline';
+      pEl.style.marginTop = '12px';
+      btn.parentElement.insertAdjacentElement('afterend', pEl);
+    }
+    document.querySelectorAll('.topic-practice-inline').forEach(el => { if (el !== pEl) el.innerHTML = ''; });
+    const globalOut = $('topicPracticeOut');
+    if (globalOut) globalOut.innerHTML = '';
+  } else {
+    pEl = $('topicPracticeOut');
+  }
+  if (!pEl) return;
+  pEl.innerHTML = '<div class="card"><div class="sec-title">正在生成</div><div class="hint">针对 ' + esc(topic) + ' 生成 3 道练习…</div></div>';
+  try {
+    const r = await api('/api/profile-topic-practice?topic=' + encodeURIComponent(topic));
+    const kindMap = {slide_formula:'计算题', slide_concept:'概念题', slide_example:'例题仿写题', slide_mcq:'判断题', integral:'积分题', limit:'极限题', derivative:'导数题', concavity:'凹凸性题'};
+    const qs = (r.questions || []).slice(0, 3).map((q, idx) => {
+      const qjson = JSON.stringify(q).replace(/"/g, '&quot;');
+      return `
+      <div class="card qcard" style="margin-top:10px" id="card-${esc(q.qid)}">
+        <div class="kv"><span class="badge ok">第 ${idx+1} 题 · ${esc(kindMap[q.kind] || q.kind || '题目')}</span></div>
+        <h3 style="margin-top:8px" class="texwrap">${esc(q.prompt)}</h3>
+        <div class="answer-box" style="margin-top:14px;background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:12px">
+          <label class="hint" style="display:block;margin-bottom:6px">我的答案</label>
+          <textarea id="ans-${esc(q.qid)}" rows="3" placeholder="在这里输入答案；过程题可每行写一步" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;font:14px/1.6 var(--mono);background:#fff"></textarea>
+          <div class="row" style="margin-top:10px;gap:10px;align-items:center">
+            <button class="btn sm" onclick="submitQuestionGrade('${esc(q.qid)}', ${qjson})">提交批改</button>
+          </div>
+          <div id="grade-${esc(q.qid)}" style="margin-top:10px"></div>
+        </div>
+        <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--dim)">查看参考答案</summary><div class="hint texwrap" style="margin-top:8px"><b>参考：</b>${esc(q.ref)}</div></details>
+      </div>`;
+    }).join('');
+    if (!qs) { pEl.innerHTML = ''; return; }
+    pEl.innerHTML = `
+      <div class="card">
+        <div class="sec-title">针对「${esc(topic)}」生成 3 道练习</div>
+        ${qs}
+      </div>
+    `;
+    math(pEl);
+  } catch(e) {
+    pEl.innerHTML = `<div class="card"><div class="badge bad">生成失败</div><div class="hint" style="margin-top:8px">${esc(e.message || e)}</div></div>`;
+  }
+}
+
+
+// ---------- 初始化 ----------
+loadCurrent();
+</script>
+</body>
+</html>

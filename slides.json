@@ -1,0 +1,222 @@
+{
+  "source": "高等数学同济件---4单调性与凹凸性.pptx",
+  "page_count": 21,
+  "slides": [
+    {
+      "page_no": 1,
+      "title": "第四节 函数的单调性与曲线的凹凸性",
+      "body_text": "",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 2,
+      "title": "一、函数的单调性",
+      "body_text": "若   x1, x2∈[a,b]，\n当x1 < x2时，\n成立 f(x1) < f(x2),\n\n称f(x)在[a,b]上\n单调增加。\n(或f(x1) > f(x2)),\n(或单调减少)\n若\n则\n有f(x)在[a,b]\n上单调增加\n定理1 若y=f(x)\n在[a,b]上连续,\n在(a,b)内可导,\n且\n则f(x)在[a,b]\n上单调增加\n(或               ),\n(或单调减少)",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 3,
+      "title": "例1 确定                                               的单调区间",
+      "body_text": "解\n令                得x1=1, x2=2,\n当－∞<x<1时，\nf(x)在(－∞,1]上单调增加。\n当1<x<2时，\nf(x)在[1,2]上单调减少。\n当2<x<+∞时，\nf(x)在[2,+∞)上单调增加。",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [
+        "解"
+      ],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 4,
+      "title": "例2 确定                     的单调区间",
+      "body_text": "解\n当－∞<x<0时，\nf(x)在(－∞,0)上单调减少。\n当0<x<+∞时，\nf(x)在(2,+∞)上单调增加。",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [
+        "解"
+      ],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 5,
+      "title": "例3 当x>0时,证明x>ln(1+x).",
+      "body_text": "证\n设 f(x)=x－ln(1+x).\n则\n因为f(x)在[0,+∞)上连续,\n在(0,+∞)内可导,\n所以f(x)在[0,+∞)上单增,\n故x>0时, f(x)>f(0)=0,\nx－ln(1+x)>0\nx>ln(1+x).",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 6,
+      "title": "例4 当x>0时, 证明",
+      "body_text": "证\n设 f(x)=\n= x － sinx\n当x>0时,\nsinx < x\n在[0,+∞)上单增,\n所以f(x)在[0,+∞)上单增,\nf(x)>f(0)=0,",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 7,
+      "title": "例5 证明当       时,",
+      "body_text": "证 设\n记\n得g(x)单增,\n得f(x)单增,",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 8,
+      "title": "例6 证明当x>1时,",
+      "body_text": "证 设 f(t)= t·lnt   (t≥1)\n得f(t)在[1,+∞)单增,\n故当x>1时,",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 9,
+      "title": "小 结",
+      "body_text": "一、单调性判别定理：\n二、单调性区间的确定法：\n    1.确定f(x)的定义域，并求出导数。\n    2.找出f(x)的不可导点、导数为零的点，并用这些点分割定义域为多个子区间。\n    3.在这些子区间上判断导数的符号，确定单调性。\n三、不等式的证明：\n    1.设出合适的辅助函数f(x)\n    2.由f(x)导数的符号判断单调性，进而证出不等式。",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 10,
+      "title": "问题:如何研究曲线的弯曲方向?",
+      "body_text": "图形上任意弧段\n位于所张弦的上方\n图形上任意弧段\n位于所张弦的下方\n二、曲线的凹凸性与拐点",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 11,
+      "title": "定义：设 f (x)在区间I上连续，",
+      "body_text": "若对任意x1, x2∈I，\n若恒有\n称f (x)在区间I上的图形是凹的\n（凸的）\n问题：判断 f(x)的凹凸性？\n比较大小：\n？\n若将f(x1) , f(x2)都表示成 f(x0)的形式，可比较大小，\n如何表示？\n用泰勒公式！",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 12,
+      "title": "由f(x)的泰勒公式：",
+      "body_text": "",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 13,
+      "title": "当        时,",
+      "body_text": "故f (x)的图形是凹的",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 14,
+      "title": "定理2",
+      "body_text": "设 f (x)在[a, b]上连续，在(a, b)内具有\n一阶和二阶导数，若在(a, b)内\n则 f (x)在[a, b]上图形是凹的，\n则 f (x)在[a, b]上图形是凸的。\n判断曲线 y=x3 的凹凸性\n点(0,0) 是该曲线凹凸的分界点！\n注意:   拐点处的切线必在拐点处穿过曲线.\n拐点:连续曲线上凹凸的分界点称为曲线的拐点",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 15,
+      "title": "例7",
+      "body_text": "求曲线\n的凹凸区间与拐点.\n解\n凹的\n凸的\n凹的\n拐点\n拐点",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [
+        "解"
+      ],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 16,
+      "title": "例8 证明",
+      "body_text": "证",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 17,
+      "title": "小 结",
+      "body_text": "一、曲线凹凸的定义：\n二、判断凹凸性求拐点的方法：\n    1.确定f(x)的定义域，并求出二阶导数。\n    2.找出f(x)的二阶导数不存在点、二阶导数为零的点，并用这些点分割定义域为多个子区间。\n    3.在这些子区间上判断二阶导数的符号，确定凹凸性、求出拐点。",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 18,
+      "title": "练习题",
+      "body_text": "1.若在               上\n则f(x)在               上是单调（    ）函数.\n2. 求曲线\n的凹凸区间与拐点。",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 19,
+      "title": "由         得：",
+      "body_text": "当                   时,\n曲线为凹的，\n当              时,\n曲线为凸的，\n拐点为：",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 20,
+      "title": "凑微分问题：",
+      "body_text": "当x>1时，",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    },
+    {
+      "page_no": 21,
+      "title": "将下列表达式凑微分",
+      "body_text": "",
+      "formulas": [],
+      "formula_objects": [],
+      "examples": [],
+      "_ole_count": 0,
+      "_wmf_count": 0
+    }
+  ]
+}

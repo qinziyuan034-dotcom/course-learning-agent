@@ -1,0 +1,17 @@
+﻿__pycache__/
+*.pyc
+venv/
+.venv/
+wmf_export/
+uploads/
+vendor/
+ocr_results*.json
+slides_*.json
+slides_backup_*.json
+weakness_profile.json
+weakness_history.json
+*.bak_*
+*.ppt
+*.pptx
+.env
+*.key
